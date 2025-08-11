@@ -12,6 +12,5 @@ Permite a los usuarios crear, editar y eliminar tareas, además de gestionar su 
 Clona el repositorio:
 
 ```bash
-git clone <url-del-repositorio-frontend>
-cd <nombre-del-proyecto-frontend>
+git clone https://github.com/edwarSuarezQ/task-manager-frontend.git
 ```
