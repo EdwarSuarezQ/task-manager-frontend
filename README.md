@@ -14,3 +14,9 @@ Clona el repositorio:
 ```bash
 git clone https://github.com/edwarSuarezQ/task-manager-frontend.git
 ```
+
+2. ejecuta con:
+
+```bash
+nmp run dev
+```
