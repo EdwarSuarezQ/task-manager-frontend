@@ -1,6 +1,6 @@
 import { useTasks } from "../context/TasksContext";
 
-function HomePage () {
+function HomePage() {
   const { tasks } = useTasks();
 
   return (
@@ -13,15 +13,15 @@ function HomePage () {
       </p>
 
       <div className="flex justify-center mb-6">
-        <a href="/tasks" className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md">
+        <a
+          href="/tasks"
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md"
+        >
           Ver mis tareas
         </a>
       </div>
 
-      <div className="bg-zinc-800 p-6 rounded-md w-full max-w-2xl">
-        
-      </div>
-
+      <div className="bg-zinc-800 p-6 rounded-md w-full max-w-2xl"></div>
     </div>
   );
 }
