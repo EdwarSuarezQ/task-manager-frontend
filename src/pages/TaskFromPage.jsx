@@ -19,6 +19,7 @@ function TaskFromPage() {
   const params = useParams();
 
   const today = dayjs().format("YYYY-MM-DD");
+  const currentTime = dayjs().format("HH:mm");
 
   useEffect(() => {
     async function loadTask() {
@@ -28,18 +29,26 @@ function TaskFromPage() {
         setValue("title", task.title);
         setValue("description", task.description);
         setValue("date", dayjs(task.date).utc().format("YYYY-MM-DD"));
+        setValue("time", dayjs(task.date).utc().format("HH:mm"));
       } else {
         setValue("date", today);
+        setValue("time", currentTime);
       }
     }
     loadTask();
   }, []);
 
   const onSubmits = handleSubmit((data) => {
+    // Combinar fecha y hora
+    const dateTimeString = `${data.date}T${data.time}`;
+
     const dataValid = {
       ...data,
-      date: data.date ? dayjs.utc(data.date).format() : dayjs.utc().format(),
+      date: data.date
+        ? dayjs.utc(dateTimeString).format()
+        : dayjs.utc().format(),
     };
+
     if (params.id) {
       updateTask(params.id, dataValid);
     } else {
@@ -83,14 +92,29 @@ function TaskFromPage() {
                 : "Ej: Ir al supermercado y comprar la cena"
             }
           ></textarea>
-          <label htmlFor="date">Fecha</label>
-          <input
-            id="date"
-            type="date"
-            min={today}
-            {...register("date")}
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
-          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="date">Fecha</label>
+              <input
+                id="date"
+                type="date"
+                min={today}
+                {...register("date", { required: true })}
+                className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
+              />
+            </div>
+            <div>
+              <label htmlFor="time">Hora</label>
+              <input
+                id="time"
+                type="time"
+                {...register("time", { required: true })}
+                className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
+              />
+            </div>
+          </div>
+
           <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md">
             Guardar
           </button>

@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuhtContext";
 import { useTasks } from "../context/TasksContext";
+import { Link } from "react-router-dom";
 
-// Importar dayjs y el plugin UTC
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
@@ -28,13 +28,24 @@ function ProfilePage() {
       <h1 className="text-3xl font-bold text-white mb-6">Mi Perfil</h1>
 
       <div className="bg-zinc-800 p-6 rounded-md w-full max-w-2xl flex flex-col gap-4">
-        <p>
-          <span className="font-bold text-slate-200">Usuario:</span>{" "}
-          {user.username}
-        </p>
-        <p>
-          <span className="font-bold text-slate-200">Correo:</span> {user.email}
-        </p>
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <p>
+              <span className="font-bold text-slate-200">Usuario:</span>{" "}
+              {user.username}
+            </p>
+            <p>
+              <span className="font-bold text-slate-200">Correo:</span>{" "}
+              {user.email}
+            </p>
+          </div>
+          <Link
+            to="/settings"
+            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md text-white text-sm"
+          >
+            Configuración
+          </Link>
+        </div>
       </div>
 
       <div className="flex justify-between mt-6 gap-4 w-full max-w-2xl">

@@ -8,9 +8,8 @@ dayjs.extend(utc);
 export function TaskCard({ task }) {
   const { deleteTask, updateTask } = useTasks();
 
-  const hoy = dayjs().format("YYYY-MM-DD");
-
-  const fechaDeTarea = dayjs.utc(task.date).format("YYYY-MM-DD");
+  const hoy = dayjs();
+  const fechaDeTarea = dayjs.utc(task.date);
 
   const toggleCompleted = () => {
     updateTask(task._id, { completed: !task.completed });
@@ -22,7 +21,7 @@ export function TaskCard({ task }) {
   if (task.completed) {
     estado = "Completada";
     colorEstado = "text-green-400";
-  } else if (fechaDeTarea < hoy) {
+  } else if (fechaDeTarea.format("YYYY-MM-DD") < hoy.format("YYYY-MM-DD")) {
     estado = "Vencida";
     colorEstado = "text-red-400";
   }
@@ -89,7 +88,7 @@ export function TaskCard({ task }) {
 
         <p className="text-sm mt-2">
           <span className="text-slate-400">
-            Fecha: {dayjs.utc(task.date).format("DD/MM/YYYY")}
+            Fecha: {dayjs.utc(task.date).format("DD/MM/YYYY, hh:mm a")}
           </span>{" "}
           - <span className={colorEstado}>{estado}</span>
         </p>
