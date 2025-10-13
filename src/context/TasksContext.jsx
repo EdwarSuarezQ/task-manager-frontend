@@ -6,25 +6,25 @@ import {
   getTaskRequest,
   updateTaskRequest,
 } from "../api/tasks";
+import { useAuth } from "./AuhtContext";
 
 const TasksContext = createContext();
 
 export const useTasks = () => {
   const context = useContext(TasksContext);
-
   if (!context) {
     throw new Error("useTasks must be used within a TaskProvider");
   }
-
   return context;
 };
 
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    getTasks();
-  }, []);
+    if (isAuthenticated) getTasks();
+  }, [isAuthenticated]);
 
   const createTask = async (task) => {
     const res = await createTaskRequest(task);
@@ -61,7 +61,6 @@ export function TaskProvider({ children }) {
   const updateTask = async (id, task) => {
     try {
       const res = await updateTaskRequest(id, task);
-
       setTasks((prevTasks) =>
         prevTasks.map((t) => (t._id === id ? res.data : t))
       );

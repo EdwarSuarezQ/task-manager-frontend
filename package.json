@@ -13,6 +13,7 @@
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
+    "lucide-react": "^0.545.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
