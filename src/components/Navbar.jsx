@@ -59,7 +59,6 @@ function Navbar() {
     enlaces.push({ to: "/admin", label: "Administración", icon: Shield });
   }
 
-  // Efecto para detectar scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -68,7 +67,6 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Efecto para cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClickFuera = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -81,7 +79,6 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickFuera);
   }, [menuAbierto]);
 
-  // Efecto para cerrar menú al cambiar de ruta
   useEffect(() => {
     setMenuAbierto(false);
   }, [location]);
@@ -94,7 +91,6 @@ function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link
             to="/"
             className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
@@ -102,11 +98,9 @@ function Navbar() {
             Gestión de Tareas
           </Link>
 
-          {/* Menú de usuario */}
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3" ref={menuRef}>
-                {/* Saludo - Solo visible en desktop */}
                 <div className="hidden sm:flex flex-col items-end">
                   <span className="text-sm text-gray-400">Hola,</span>
                   <span className="text-sm font-semibold text-white max-w-32 truncate">
@@ -114,7 +108,6 @@ function Navbar() {
                   </span>
                 </div>
 
-                {/* Avatar y menú desplegable */}
                 <div className="relative">
                   <button
                     onClick={toggleMenu}
@@ -135,10 +128,8 @@ function Navbar() {
                     </div>
                   </button>
 
-                  {/* Menú desplegable */}
                   {menuAbierto && (
                     <div className="absolute top-full right-0 mt-2 w-64 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl py-2 z-50">
-                      {/* Header del menú */}
                       <div className="px-4 py-3 border-b border-zinc-700">
                         <div className="flex items-center gap-3">
                           <div
@@ -162,7 +153,6 @@ function Navbar() {
                         </div>
                       </div>
 
-                      {/* Enlaces del menú */}
                       <div className="py-2">
                         {enlaces.map((enlace) => {
                           const Icon = enlace.icon;
@@ -193,10 +183,8 @@ function Navbar() {
                         })}
                       </div>
 
-                      {/* Separador */}
                       <div className="border-t border-zinc-700 my-2"></div>
 
-                      {/* Cerrar sesión */}
                       <div className="px-2">
                         <button
                           onClick={() => {
@@ -214,7 +202,6 @@ function Navbar() {
                 </div>
               </div>
             ) : (
-              /* Botones para usuarios no autenticados */
               <div className="flex items-center gap-3">
                 {rutaActual !== "/login" && (
                   <Link
