@@ -114,7 +114,6 @@ function UserSettingsPage() {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-[calc(100vh-100px)] px-6 py-10 relative">
-      {/* --- Mensaje flotante centrado --- */}
       {message.text && (
         <div
           className={`fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg transition-all duration-500 ${
@@ -165,7 +164,6 @@ function UserSettingsPage() {
       </div>
 
       <div className="w-full max-w-2xl">
-        {/* --- ACTUALIZAR PERFIL --- */}
         {activeTab === "profile" && (
           <div className="bg-zinc-800 p-6 rounded-md">
             <h2 className="text-xl font-bold text-white mb-4">
@@ -212,7 +210,6 @@ function UserSettingsPage() {
           </div>
         )}
 
-        {/* --- CAMBIAR CONTRASEÑA --- */}
         {activeTab === "password" && (
           <div className="bg-zinc-800 p-6 rounded-md">
             <h2 className="text-xl font-bold text-white mb-4">
@@ -282,7 +279,6 @@ function UserSettingsPage() {
           </div>
         )}
 
-        {/* --- ELIMINAR CUENTA --- */}
         {activeTab === "danger" && (
           <div className="bg-zinc-800 p-6 rounded-md border border-red-600">
             <h2 className="text-xl font-bold text-red-400 mb-4">
