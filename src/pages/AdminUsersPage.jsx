@@ -34,7 +34,7 @@ function AdminUsersPage() {
         userItem.role.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredUsers(filtered);
-    setCurrentPage(1); //resetear a la primera pagina cuando se busca
+    setCurrentPage(1);
   }, [searchTerm, users]);
 
   const loadUsers = async () => {
@@ -105,13 +105,11 @@ function AdminUsersPage() {
     });
   };
 
-  //calculos para la paginacion
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentUsers = filteredUsers.slice(startIndex, endIndex);
 
-  //array de paginas para mostrar
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -186,10 +184,8 @@ function AdminUsersPage() {
         </div>
       )}
 
-      {/* Controles de búsqueda */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 w-full max-w-6xl">
         <div className="flex items-center gap-4">
-          {/* Buscador con botón */}
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <div className="relative">
               <input
@@ -219,7 +215,6 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full max-w-6xl">
         <div className="bg-blue-600 p-4 rounded-md text-center text-white">
           <p className="font-bold">Total Usuarios</p>
@@ -235,7 +230,6 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Tabla de usuarios */}
       <div className="bg-zinc-800 rounded-md w-full max-w-6xl overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
@@ -329,9 +323,7 @@ function AdminUsersPage() {
         )}
       </div>
 
-      {/* Controles de paginación e información - DEBAJO DE LA TABLA */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6 w-full max-w-6xl">
-        {/* Selector de items por página */}
         <div className="flex items-center gap-2">
           <label className="text-gray-300 text-sm">Mostrar:</label>
           <select
@@ -348,7 +340,6 @@ function AdminUsersPage() {
           <span className="text-gray-300 text-sm">registros por página</span>
         </div>
 
-        {/* Navegación de páginas */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2">
             <button
@@ -397,7 +388,6 @@ function AdminUsersPage() {
           </div>
         )}
 
-        {/* Información de paginación */}
         <div className="text-gray-300 text-sm">
           Mostrando {startIndex + 1} -{" "}
           {Math.min(endIndex, filteredUsers.length)} de {filteredUsers.length}{" "}

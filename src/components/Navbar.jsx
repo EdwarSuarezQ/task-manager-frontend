@@ -1,159 +1,242 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuhtContext";
-import { Menu, X } from "lucide-react"; // íconos del menú
+import {
+  ChevronDown,
+  ChevronUp,
+  User,
+  Settings,
+  LogOut,
+  PlusCircle,
+  CheckSquare,
+  Shield,
+} from "lucide-react";
 
 function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
   const location = useLocation();
   const [menuAbierto, setMenuAbierto] = useState(false);
-
-  const enPerfil = location.pathname === "/profile";
-  const enConfiguracion = location.pathname === "/settings";
-  const enAdmin = location.pathname === "/admin";
+  const [isScrolled, setIsScrolled] = useState(false);
+  const menuRef = useRef(null);
 
   const toggleMenu = () => setMenuAbierto(!menuAbierto);
 
+  const colores = [
+    "bg-indigo-700",
+    "bg-blue-700",
+    "bg-slate-600",
+    "bg-purple-700",
+    "bg-gray-700",
+    "bg-emerald-700",
+  ];
+
+  const obtenerColorUsuario = (nombre = "") => {
+    let hash = 0;
+    for (let i = 0; i < nombre.length; i++) {
+      hash = nombre.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colores[Math.abs(hash) % colores.length];
+  };
+
+  const obtenerIniciales = (nombre = "") =>
+    nombre
+      .split(" ")
+      .map((n) => n[0]?.toUpperCase())
+      .join("")
+      .slice(0, 2);
+
+  const colorCirculo = obtenerColorUsuario(user?.username || "Usuario");
+  const rutaActual = location.pathname;
+
+  const enlaces = [
+    { to: "/add-task", label: "Nueva Tarea", icon: PlusCircle },
+    { to: "/tasks", label: "Tareas", icon: CheckSquare },
+    { to: "/profile", label: "Mi Perfil", icon: User },
+    { to: "/settings", label: "Configuración", icon: Settings },
+  ];
+
+  if (user?.role === "admin") {
+    enlaces.push({ to: "/admin", label: "Administración", icon: Shield });
+  }
+
+  // Efecto para detectar scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Efecto para cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickFuera = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuAbierto(false);
+      }
+    };
+    if (menuAbierto) document.addEventListener("mousedown", handleClickFuera);
+    else document.removeEventListener("mousedown", handleClickFuera);
+
+    return () => document.removeEventListener("mousedown", handleClickFuera);
+  }, [menuAbierto]);
+
+  // Efecto para cerrar menú al cambiar de ruta
+  useEffect(() => {
+    setMenuAbierto(false);
+  }, [location]);
+
   return (
-    <nav className="bg-zinc-800 p-4 flex justify-between items-center relative">
-      {/* Título */}
-      <Link to="/" className="text-2xl font-bold text-white">
-        Gestión de Tareas
-      </Link>
+    <nav
+      className={`bg-zinc-800 fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "shadow-xl border-b border-zinc-700" : ""
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
+          >
+            Gestión de Tareas
+          </Link>
 
-      <div className="flex items-center gap-4">
-        {/* Texto de bienvenida (solo si está autenticado) */}
-        {isAuthenticated && (
-          <span className="text-gray-300 text-sm sm:text-base">
-            Bienvenido, <span className="font-semibold">{user.username}</span>
-          </span>
-        )}
+          {/* Menú de usuario */}
+          <div className="flex items-center gap-4">
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3" ref={menuRef}>
+                {/* Saludo - Solo visible en desktop */}
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-sm text-gray-400">Hola,</span>
+                  <span className="text-sm font-semibold text-white max-w-32 truncate">
+                    {user.username}
+                  </span>
+                </div>
 
-        {/* Botón hamburguesa */}
-        <button
-          onClick={toggleMenu}
-          className="text-white hover:text-gray-300 focus:outline-none"
-        >
-          {menuAbierto ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
-
-      {/* Menú desplegable */}
-      {menuAbierto && (
-        <ul className="absolute top-full right-0 mt-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg flex flex-col gap-2 p-3 z-50">
-          {isAuthenticated ? (
-            <>
-              <li>
-                <Link
-                  to="/"
-                  onClick={() => {
-                    logout();
-                    setMenuAbierto(false);
-                  }}
-                  className="block text-center bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md"
-                >
-                  Cerrar Sesion
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/add-task"
-                  onClick={() => setMenuAbierto(false)}
-                  className="block text-center bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md"
-                >
-                  Nueva Tarea
-                </Link>
-              </li>
-
-              {enPerfil ? (
-                <li>
-                  <Link
-                    to="/tasks"
-                    onClick={() => setMenuAbierto(false)}
-                    className="block text-center bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-md"
+                {/* Avatar y menú desplegable */}
+                <div className="relative">
+                  <button
+                    onClick={toggleMenu}
+                    className="flex items-center gap-2 p-1 rounded-lg transition-all duration-200"
+                    aria-label="Abrir menú de usuario"
                   >
-                    Volver a Tareas
-                  </Link>
-                </li>
-              ) : enConfiguracion ? (
-                <li>
-                  <Link
-                    to="/profile"
-                    onClick={() => setMenuAbierto(false)}
-                    className="block text-center bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md"
-                  >
-                    Mi Perfil
-                  </Link>
-                </li>
-              ) : enAdmin ? (
-                <li>
-                  <Link
-                    to="/profile"
-                    onClick={() => setMenuAbierto(false)}
-                    className="block text-center bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md"
-                  >
-                    Mi Perfil
-                  </Link>
-                </li>
-              ) : (
-                <>
-                  <li>
-                    <Link
-                      to="/profile"
-                      onClick={() => setMenuAbierto(false)}
-                      className="block text-center bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md"
+                    <div
+                      className={`w-10 h-10 rounded-full ${colorCirculo} flex items-center justify-center text-white font-semibold border border-gray-500`}
                     >
-                      Mi Perfil
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/settings"
-                      onClick={() => setMenuAbierto(false)}
-                      className="block text-center bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md"
-                    >
-                      Configuración
-                    </Link>
-                  </li>
-                  {user.role === "admin" && (
-                    <li>
-                      <Link
-                        to="/admin"
-                        onClick={() => setMenuAbierto(false)}
-                        className="block text-center bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md"
-                      >
-                        Administración
-                      </Link>
-                    </li>
+                      {obtenerIniciales(user?.username || "U")}
+                    </div>
+                    <div className="hidden sm:block">
+                      {menuAbierto ? (
+                        <ChevronUp size={18} className="text-gray-300" />
+                      ) : (
+                        <ChevronDown size={18} className="text-gray-300" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Menú desplegable */}
+                  {menuAbierto && (
+                    <div className="absolute top-full right-0 mt-2 w-64 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl py-2 z-50">
+                      {/* Header del menú */}
+                      <div className="px-4 py-3 border-b border-zinc-700">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-12 h-12 rounded-full ${colorCirculo} flex items-center justify-center text-white font-semibold border border-gray-500`}
+                          >
+                            {obtenerIniciales(user?.username || "U")}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold truncate">
+                              {user.username}
+                            </p>
+                            <p className="text-gray-400 text-sm truncate">
+                              {user.email}
+                            </p>
+                            <span className="inline-block mt-1 px-2 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full">
+                              {user.role === "admin"
+                                ? "Administrador"
+                                : "Usuario"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Enlaces del menú */}
+                      <div className="py-2">
+                        {enlaces.map((enlace) => {
+                          const Icon = enlace.icon;
+                          const estaActivo = rutaActual === enlace.to;
+
+                          return (
+                            <Link
+                              key={enlace.to}
+                              to={enlace.to}
+                              onClick={() => setMenuAbierto(false)}
+                              className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-md transition-all duration-200 ${
+                                estaActivo
+                                  ? "bg-blue-500/20 text-blue-300"
+                                  : "text-gray-200 hover:bg-zinc-800 hover:text-white"
+                              }`}
+                            >
+                              <Icon
+                                size={18}
+                                className={
+                                  estaActivo ? "text-blue-400" : "text-gray-400"
+                                }
+                              />
+                              <span className="font-medium">
+                                {enlace.label}
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+
+                      {/* Separador */}
+                      <div className="border-t border-zinc-700 my-2"></div>
+
+                      {/* Cerrar sesión */}
+                      <div className="px-2">
+                        <button
+                          onClick={() => {
+                            logout();
+                            setMenuAbierto(false);
+                          }}
+                          className="flex items-center gap-3 w-full px-4 py-3 text-red-400 hover:bg-zinc-800 hover:text-red-300 rounded-md transition-all duration-200"
+                        >
+                          <LogOut size={18} />
+                          <span className="font-medium">Cerrar Sesión</span>
+                        </button>
+                      </div>
+                    </div>
                   )}
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <li>
-                <Link
-                  to="/login"
-                  onClick={() => setMenuAbierto(false)}
-                  className="block text-center bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md"
-                >
-                  Iniciar Sesión
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/register"
-                  onClick={() => setMenuAbierto(false)}
-                  className="block text-center bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md"
-                >
-                  Registrarse
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
-      )}
+                </div>
+              </div>
+            ) : (
+              /* Botones para usuarios no autenticados */
+              <div className="flex items-center gap-3">
+                {rutaActual !== "/login" && (
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 text-gray-200 hover:text-white border border-gray-500 hover:border-gray-400 rounded-md transition-all duration-200"
+                  >
+                    Iniciar Sesión
+                  </Link>
+                )}
+                {rutaActual !== "/register" && (
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200"
+                  >
+                    Registrarse
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </nav>
   );
 }
