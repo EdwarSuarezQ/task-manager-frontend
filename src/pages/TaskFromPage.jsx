@@ -39,7 +39,6 @@ function TaskFromPage() {
   }, []);
 
   const onSubmits = handleSubmit((data) => {
-    // Combinar fecha y hora
     const dateTimeString = `${data.date}T${data.time}`;
 
     const dataValid = {
