@@ -14,31 +14,34 @@ import AdminUsersPage from "./pages/AdminUsersPage";
 import ProtecteRoute from "./ProtectedRoute";
 import { TaskProvider } from "./context/TasksContext";
 import Navbar from "./components/Navbar";
+import { NotificationsProvider } from "./context/NotificationsContext";
 
 function App() {
   return (
     <AuthProvider>
       <TaskProvider>
-        <BrowserRouter>
-          <Navbar />
-          <main className="container mx-auto px-10 pt-16">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+        <NotificationsProvider>
+          <BrowserRouter>
+            <Navbar />
+            <main className="container mx-auto px-10 pt-16">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-              <Route element={<ProtecteRoute />}>
-                <Route path="/tasks" element={<TasksPage />} />
-                <Route path="/add-task" element={<TaskFromPage />} />
-                <Route path="/tasks/:id" element={<TaskFromPage />} />
-                <Route path="/tasks/view/:id" element={<TaskDetailPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/settings" element={<UserSettingsPage />} />
-                <Route path="/admin" element={<AdminUsersPage />} />
-              </Route>
-            </Routes>
-          </main>
-        </BrowserRouter>
+                <Route element={<ProtecteRoute />}>
+                  <Route path="/tasks" element={<TasksPage />} />
+                  <Route path="/add-task" element={<TaskFromPage />} />
+                  <Route path="/tasks/:id" element={<TaskFromPage />} />
+                  <Route path="/tasks/view/:id" element={<TaskDetailPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/settings" element={<UserSettingsPage />} />
+                  <Route path="/admin" element={<AdminUsersPage />} />
+                </Route>
+              </Routes>
+            </main>
+          </BrowserRouter>
+        </NotificationsProvider>
       </TaskProvider>
     </AuthProvider>
   );
