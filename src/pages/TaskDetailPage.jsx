@@ -35,7 +35,7 @@ export function TaskDetailPage() {
           {task.description}
         </p>
         <p className="text-slate-400 text-sm mb-6">
-          Fecha: {dayjs.utc(task.date).format("DD/MM/YYYY")}
+          Fecha: {dayjs.utc(task.date).format("DD/MM/YYYY, hh:mm a")}
         </p>
 
         <Link
