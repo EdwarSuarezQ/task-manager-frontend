@@ -52,7 +52,7 @@ export function NotificationsProvider({ children }) {
 
     try {
       setLoading(true);
-      if (user?.role === "admin") {
+      if (user?.role === "admin" || user?.role === "super_admin") {
         const res = await getAdminNotificationsRequest();
         setNotifications(res.data.alerts || []);
         setSummary(res.data.summary || null);

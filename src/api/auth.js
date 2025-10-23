@@ -26,3 +26,8 @@ export const toggleUserStatusRequest = (id, isActive) =>
   axios.put(`/users/${id}/toggle-status`, { isActive });
 
 export const deleteUserRequest = (id) => axios.delete(`/users/${id}`);
+
+export const changeUserRoleRequest = (id, role) =>
+  axios.put(`/users/${id}/change-role`, { role });
+
+export const refreshTokenRequest = () => axios.post("/refresh-token");

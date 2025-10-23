@@ -77,7 +77,7 @@ function Navbar() {
     { to: "/settings", label: "Configuración", icon: Settings },
   ];
 
-  if (user?.role === "admin") {
+  if (user?.role === "admin" || user?.role === "super_admin") {
     enlaces.push({ to: "/admin", label: "Administración", icon: Shield });
   }
 
@@ -178,92 +178,118 @@ function Navbar() {
                               </span>
                             )}
                           </h3>
-                          {user?.role === "admin" && summary && (
-                            <div className="text-xs text-gray-400">
-                              {summary.tasksOverdue > 0 && (
-                                <span className="text-red-400 mx-1">●</span>
-                              )}
-                              {summary.tasksDueToday > 0 && (
-                                <span className="text-yellow-400 mx-1">●</span>
-                              )}
-                            </div>
-                          )}
+                          {(user?.role === "admin" ||
+                            user?.role === "super_admin") &&
+                            summary && (
+                              <div className="text-xs text-gray-400">
+                                {summary.tasksOverdue > 0 && (
+                                  <span className="text-red-400 mx-1">●</span>
+                                )}
+                                {summary.tasksDueToday > 0 && (
+                                  <span className="text-yellow-400 mx-1">
+                                    ●
+                                  </span>
+                                )}
+                              </div>
+                            )}
                         </div>
                       </div>
 
                       <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 ? (
-                          <div className="p-6 text-center">
-                            <Bell
-                              size={32}
-                              className="text-gray-500 mx-auto mb-2"
-                            />
-                            <p className="text-gray-400 text-sm">
-                              No tienes notificaciones
-                            </p>
+                          <div className="p-6 text-center text-gray-400">
+                            <Bell size={32} className="mx-auto mb-2" />
+                            <p>No tienes notificaciones</p>
                           </div>
                         ) : (
                           <div className="divide-y divide-zinc-800">
-                            {notifications.map((noti, index) => (
-                              <div
-                                key={index}
-                                className="p-4 cursor-pointer transition-all duration-200 hover:bg-zinc-800"
-                                onClick={() => handleNotificationClick(noti)}
-                              >
-                                <div className="flex items-start">
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-white text-sm leading-relaxed">
-                                      {noti.message}
-                                    </p>
+                            {notifications.map((noti, index) => {
+                              const isOverdue =
+                                noti.message?.includes("vencida");
+                              const isDueToday =
+                                noti.message?.includes("vence hoy");
+                              const isDueTomorrow =
+                                noti.message?.includes("vence mañana");
 
-                                    {noti.dueDate && (
-                                      <p className="text-gray-500 text-xs mt-1">
-                                        Vence:{" "}
-                                        {formatNotificationDate(noti.dueDate)}
+                              return (
+                                <div
+                                  key={index}
+                                  className="p-4 cursor-pointer hover:bg-zinc-800"
+                                  onClick={() => handleNotificationClick(noti)}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div
+                                      className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                                        isOverdue
+                                          ? "bg-red-500"
+                                          : isDueToday
+                                          ? "bg-yellow-500"
+                                          : isDueTomorrow
+                                          ? "bg-blue-500"
+                                          : "bg-gray-500"
+                                      }`}
+                                    />
+
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-white text-sm">
+                                        {noti.message}
                                       </p>
-                                    )}
 
-                                    <p className="text-gray-600 text-[11px] mt-1">
-                                      {getRelativeTime(noti.generatedAt)}
-                                    </p>
+                                      {noti.dueDate && (
+                                        <p className="text-gray-500 text-xs mt-1">
+                                          Vence:{" "}
+                                          {formatNotificationDate(noti.dueDate)}
+                                        </p>
+                                      )}
+
+                                      <p className="text-gray-600 text-xs mt-1">
+                                        {getRelativeTime(noti.generatedAt)}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>
 
-                      {user?.role === "admin" && summary && (
-                        <div className="px-4 py-3 border-t border-zinc-700 bg-zinc-800/50">
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="text-gray-400">
-                              Usuarios:{" "}
-                              <span className="text-white">
-                                {summary.totalUsers}
-                              </span>
-                            </div>
-                            <div className="text-gray-400">
-                              Tareas:{" "}
-                              <span className="text-white">
-                                {summary.tasksTotal}
-                              </span>
-                            </div>
-                            <div className="text-red-400">
-                              Vencidas:{" "}
-                              <span className="text-white">
-                                {summary.tasksOverdue}
-                              </span>
-                            </div>
-                            <div className="text-yellow-400">
-                              Hoy:{" "}
-                              <span className="text-white">
-                                {summary.tasksDueToday}
-                              </span>
+                      {(user?.role === "admin" ||
+                        user?.role === "super_admin") &&
+                        summary && (
+                          <div className="px-4 py-3 border-t border-zinc-700 bg-zinc-800">
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                                <span className="text-gray-400">Usuarios:</span>
+                                <span className="text-white font-semibold">
+                                  {summary.totalUsers}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                                <span className="text-gray-400">Tareas:</span>
+                                <span className="text-white font-semibold">
+                                  {summary.tasksTotal}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-red-500 rounded-full" />
+                                <span className="text-gray-400">Vencidas:</span>
+                                <span className="text-white font-semibold">
+                                  {summary.tasksOverdue}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                                <span className="text-gray-400">Hoy:</span>
+                                <span className="text-white font-semibold">
+                                  {summary.tasksDueToday}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
                 </div>
@@ -313,7 +339,9 @@ function Navbar() {
                                 {user.email}
                               </p>
                               <span className="inline-block mt-1 px-2 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full">
-                                {user.role === "admin"
+                                {user.role === "super_admin"
+                                  ? "Super Admin"
+                                  : user.role === "admin"
                                   ? "Administrador"
                                   : "Usuario"}
                               </span>
