@@ -1,10 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuhtContext";
 import {
   getUsersRequest,
   toggleUserStatusRequest,
   deleteUserRequest,
+  changeUserRoleRequest,
 } from "../api/auth";
+import {
+  MoreVertical,
+  UserX,
+  UserCheck,
+  Trash2,
+  Shield,
+  User,
+  ChevronDown,
+} from "lucide-react";
 
 function AdminUsersPage() {
   const { user } = useAuth();
@@ -16,9 +26,11 @@ function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRefs = useRef({});
 
   useEffect(() => {
-    if (user && user.role === "admin") {
+    if (user && (user.role === "admin" || user.role === "super_admin")) {
       loadUsers();
     } else {
       showMessage("error", "No tienes permisos de administrador");
@@ -36,6 +48,23 @@ function AdminUsersPage() {
     setFilteredUsers(filtered);
     setCurrentPage(1);
   }, [searchTerm, users]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const isOutsideAll = Object.values(dropdownRefs.current).every(
+        (ref) => ref && !ref.contains(event.target)
+      );
+
+      if (isOutsideAll) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const loadUsers = async () => {
     try {
@@ -61,8 +90,15 @@ function AdminUsersPage() {
     try {
       const response = await toggleUserStatusRequest(userId, !currentStatus);
       showMessage("success", response.data.message);
-      setUsers(
-        users.map((u) =>
+
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u._id === userId ? { ...u, isActive: !currentStatus } : u
+        )
+      );
+
+      setFilteredUsers((prevFiltered) =>
+        prevFiltered.map((u) =>
           u._id === userId ? { ...u, isActive: !currentStatus } : u
         )
       );
@@ -85,13 +121,113 @@ function AdminUsersPage() {
     try {
       await deleteUserRequest(userId);
       showMessage("success", "Usuario eliminado exitosamente");
-      setUsers(users.filter((u) => u._id !== userId));
+
+      setUsers((prevUsers) => prevUsers.filter((u) => u._id !== userId));
+      setFilteredUsers((prevFiltered) =>
+        prevFiltered.filter((u) => u._id !== userId)
+      );
     } catch (error) {
       showMessage(
         "error",
         error.response?.data?.message || "Error al eliminar usuario"
       );
     }
+  };
+
+  const handleChangeRole = async (userId, currentRole, newRole) => {
+    if (
+      !window.confirm(
+        `¿Estás seguro de que quieres cambiar el rol de este usuario de "${currentRole}" a "${newRole}"?`
+      )
+    )
+      return;
+
+    try {
+      const response = await changeUserRoleRequest(userId, newRole);
+      showMessage("success", response.data.message);
+
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
+      );
+
+      setFilteredUsers((prevFiltered) =>
+        prevFiltered.map((u) =>
+          u._id === userId ? { ...u, role: newRole } : u
+        )
+      );
+    } catch (error) {
+      showMessage(
+        "error",
+        error.response?.data?.message || "Error al cambiar rol del usuario"
+      );
+    }
+  };
+
+  const getAvailableActions = (userItem) => {
+    const actions = [];
+
+    if (userItem._id === user.id) {
+      return actions;
+    }
+
+    if (userItem.role !== "super_admin") {
+      actions.push({
+        id: "toggle-status",
+        label: userItem.isActive ? "Bloquear Usuario" : "Desbloquear Usuario",
+        icon: userItem.isActive ? UserX : UserCheck,
+        action: () => handleToggleStatus(userItem._id, userItem.isActive),
+        color: userItem.isActive ? "text-red-400" : "text-green-400",
+      });
+    }
+
+    if (user.role === "super_admin" && userItem._id !== user.id) {
+      const existingSuperAdmin = users.find(
+        (u) => u.role === "super_admin" && u._id !== userItem._id
+      );
+
+      if (userItem.role !== "user") {
+        actions.push({
+          id: "make-user",
+          label: "Hacer Usuario Normal",
+          icon: User,
+          action: () => handleChangeRole(userItem._id, userItem.role, "user"),
+          color: "text-gray-300",
+        });
+      }
+
+      if (userItem.role !== "admin") {
+        actions.push({
+          id: "make-admin",
+          label: "Hacer Administrador",
+          icon: Shield,
+          action: () => handleChangeRole(userItem._id, userItem.role, "admin"),
+          color: "text-purple-400",
+        });
+      }
+
+      if (userItem.role !== "super_admin" && !existingSuperAdmin) {
+        actions.push({
+          id: "make-super-admin",
+          label: "Hacer Super Admin",
+          icon: Shield,
+          action: () =>
+            handleChangeRole(userItem._id, userItem.role, "super_admin"),
+          color: "text-red-400",
+        });
+      }
+    }
+
+    if (userItem.role !== "super_admin" && userItem._id !== user.id) {
+      actions.push({
+        id: "delete",
+        label: "Eliminar Usuario",
+        icon: Trash2,
+        action: () => handleDeleteUser(userItem._id, userItem.username),
+        color: "text-red-400",
+      });
+    }
+
+    return actions;
   };
 
   const formatDate = (dateString) => {
@@ -156,6 +292,14 @@ function AdminUsersPage() {
     setCurrentPage(1);
   };
 
+  const setDropdownRef = (element, userId) => {
+    if (element) {
+      dropdownRefs.current[userId] = element;
+    } else {
+      delete dropdownRefs.current[userId];
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -173,8 +317,11 @@ function AdminUsersPage() {
           </h1>
           <p className="text-gray-300">
             Bienvenido,{" "}
-            <span className="font-semibold text-white">{user.username}</span>{" "}
-            (Administrador)
+            <span className="font-semibold text-white">{user.username}</span> (
+            {user.role === "super_admin"
+              ? "Super Administrador"
+              : "Administrador"}
+            )
           </p>
         </div>
 
@@ -267,79 +414,121 @@ function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {currentUsers.map((userItem) => (
-                  <tr
-                    key={userItem._id}
-                    className="border-b border-zinc-700 hover:bg-zinc-750 transition-colors"
-                  >
-                    <td className="w-48 p-4 text-gray-300 font-medium whitespace-nowrap truncate">
-                      {userItem.username}
-                    </td>
-                    <td className="w-64 p-4 text-gray-300 whitespace-nowrap truncate">
-                      {userItem.email}
-                    </td>
-                    <td className="w-32 p-4 text-center">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
-                          userItem.role === "admin"
-                            ? "bg-purple-600 text-white"
-                            : "bg-gray-600 text-white"
-                        }`}
-                      >
-                        {userItem.role === "admin" ? "Admin" : "Usuario"}
-                      </span>
-                    </td>
-                    <td className="w-36 p-4 text-center">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
-                          userItem.isActive
-                            ? "bg-green-600 text-white"
-                            : "bg-red-600 text-white"
-                        }`}
-                      >
-                        {userItem.isActive ? "Activo" : "Bloqueado"}
-                      </span>
-                    </td>
-                    <td className="w-48 p-4 text-gray-300 text-sm text-center whitespace-nowrap">
-                      {formatDate(userItem.createdAt)}
-                    </td>
-                    <td className="w-56 p-4 text-center">
-                      <div className="flex justify-center gap-2">
-                        {userItem._id !== user.id && (
-                          <button
-                            onClick={() =>
-                              handleToggleStatus(
-                                userItem._id,
-                                userItem.isActive
-                              )
-                            }
-                            className={`px-3 py-1 rounded text-xs font-medium w-24 transition-colors ${
-                              userItem.isActive
-                                ? "bg-red-600 hover:bg-red-700 text-white"
-                                : "bg-green-600 hover:bg-green-700 text-white"
-                            }`}
+                {currentUsers.map((userItem, index) => {
+                  const availableActions = getAvailableActions(userItem);
+
+                  return (
+                    <tr
+                      key={userItem._id}
+                      className={`border-b border-zinc-700 transition-colors ${
+                        index % 2 === 0 ? "bg-zinc-800" : "bg-zinc-700"
+                      } hover:bg-zinc-600`}
+                    >
+                      <td className="w-48 p-4 text-gray-300 font-medium whitespace-nowrap truncate">
+                        {userItem.username}
+                      </td>
+                      <td className="w-64 p-4 text-gray-300 whitespace-nowrap truncate">
+                        {userItem.email}
+                      </td>
+                      <td className="w-32 p-4 text-center">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
+                            userItem.role === "super_admin"
+                              ? "bg-red-600 text-white"
+                              : userItem.role === "admin"
+                              ? "bg-purple-600 text-white"
+                              : "bg-gray-600 text-white"
+                          }`}
+                        >
+                          {userItem.role === "super_admin"
+                            ? "Super Admin"
+                            : userItem.role === "admin"
+                            ? "Admin"
+                            : "Usuario"}
+                        </span>
+                      </td>
+                      <td className="w-36 p-4 text-center">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
+                            userItem.isActive
+                              ? "bg-green-600 text-white"
+                              : "bg-red-600 text-white"
+                          }`}
+                        >
+                          {userItem.isActive ? "Activo" : "Bloqueado"}
+                        </span>
+                      </td>
+                      <td className="w-48 p-4 text-gray-300 text-sm text-center whitespace-nowrap">
+                        {formatDate(userItem.createdAt)}
+                      </td>
+                      <td className="w-48 p-4 text-center">
+                        {availableActions.length > 0 ? (
+                          <div
+                            className="relative"
+                            ref={(el) => setDropdownRef(el, userItem._id)}
                           >
-                            {userItem.isActive ? "Bloquear" : "Desbloquear"}
-                          </button>
-                        )}
-                        {userItem._id !== user.id &&
-                          userItem.role !== "admin" && (
                             <button
                               onClick={() =>
-                                handleDeleteUser(
-                                  userItem._id,
-                                  userItem.username
+                                setOpenDropdown(
+                                  openDropdown === userItem._id
+                                    ? null
+                                    : userItem._id
                                 )
                               }
-                              className="px-3 py-1 rounded text-xs font-medium bg-red-600 hover:bg-red-700 text-white w-24 transition-colors"
+                              className="w-full flex items-center justify-between px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-md text-gray-300 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
                             >
-                              Eliminar
+                              <span className="font-medium truncate">
+                                Acciones
+                              </span>
+                              <ChevronDown
+                                size={14}
+                                className={`transition-transform duration-200 ${
+                                  openDropdown === userItem._id
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
                             </button>
-                          )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+
+                            {openDropdown === userItem._id && (
+                              <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-800 border border-zinc-600 rounded-md shadow-xl z-50 overflow-hidden">
+                                {availableActions.map((action, index) => {
+                                  const Icon = action.icon;
+                                  return (
+                                    <button
+                                      key={action.id}
+                                      onClick={() => {
+                                        action.action();
+                                        setOpenDropdown(null);
+                                      }}
+                                      className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${
+                                        index > 0
+                                          ? "border-t border-zinc-600"
+                                          : ""
+                                      }`}
+                                    >
+                                      <Icon
+                                        size={14}
+                                        className={action.color}
+                                      />
+                                      <span className="text-gray-300 font-medium">
+                                        {action.label}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-500 text-xs">
+                            No hay acciones disponibles
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 
