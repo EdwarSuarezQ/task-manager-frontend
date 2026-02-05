@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await registerRequest(user);
       console.log(res.data);
+      if (res.data.token) localStorage.setItem("token", res.data.token);
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (error) {
@@ -39,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await loginRequest(user);
       console.log(res);
+      if (res.data.token) localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
       setUser(res.data);
     } catch (error) {
@@ -51,6 +53,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     Cookies.remove("token");
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUser(null);
   };
