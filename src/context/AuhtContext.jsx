@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       const res = await registerRequest(user);
       console.log(res.data);
       if (res.data.token) localStorage.setItem("token", res.data.token);
-      setUser(res.data);
+      setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (error) {
       console.log(error.response.data);
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       console.log(res);
       if (res.data.token) localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
-      setUser(res.data);
+      setUser(res.data.user);
     } catch (error) {
       if (Array.isArray(error.response.data)) {
         return setErrors(error.response.data);
@@ -73,18 +73,18 @@ export const AuthProvider = ({ children }) => {
     async function checkLogin() {
       try {
         const res = await verifyTokenRequest();
-        if (!res.data) {
+        
+        if (res.data && res.data.user) {
+          setIsAuthenticated(true);
+          setUser(res.data.user);
+        } else {
           setIsAuthenticated(false);
-          setLoading(false);
-          return;
+          setUser(null);
         }
-
-        setIsAuthenticated(true);
-        setUser(res.data);
-        setLoading(false);
       } catch (error) {
         setIsAuthenticated(false);
         setUser(null);
+      } finally {
         setLoading(false);
       }
     }

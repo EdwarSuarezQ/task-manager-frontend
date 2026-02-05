@@ -6,6 +6,8 @@ export const loginRequest = (user) => axios.post(`/login`, user);
 
 export const verifyTokenRequest = () => axios.get("/verify");
 
+export const logoutRequest = () => axios.post("/logout");
+
 //gestion de usuarios
 export const updateProfileRequest = (userData) =>
   axios.put("/profile", userData);
