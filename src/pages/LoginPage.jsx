@@ -41,6 +41,7 @@ function LoginPage () {
             className={`w-full border bg-zinc-700  text-white px-4 py-6 rounded-md my-2
             ${errors.password && "border-red-500 text-red-500 placeholder-red-500"} `}
             placeholder={errors.password ? 'Se requiere una contraseña' : 'Contraseña'}
+            autoComplete="current-password"
           />
 
           <button className='w-full hover:bg-zinc-900 text-white px-4 py-6 rounded-md my-2'>Iniciar Sesion</button>

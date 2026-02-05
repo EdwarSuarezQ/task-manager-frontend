@@ -231,6 +231,7 @@ function UserSettingsPage() {
                   }
                   className="w-full px-3 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none"
                   required
+                  autoComplete="current-password"
                 />
               </div>
               <div>
@@ -249,6 +250,7 @@ function UserSettingsPage() {
                   className="w-full px-3 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none"
                   required
                   minLength={6}
+                  autoComplete="new-password"
                 />
               </div>
               <div>
@@ -266,6 +268,7 @@ function UserSettingsPage() {
                   }
                   className="w-full px-3 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none"
                   required
+                  autoComplete="new-password"
                 />
               </div>
               <button
@@ -301,6 +304,7 @@ function UserSettingsPage() {
                   }
                   className="w-full px-3 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-red-500 focus:outline-none"
                   required
+                  autoComplete="current-password"
                 />
               </div>
               <div className="flex items-center">
