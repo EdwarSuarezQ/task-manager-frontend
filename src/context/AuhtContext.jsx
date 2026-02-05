@@ -32,8 +32,8 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      console.log(error.response.data);
-      setErrors(error.response.data);
+      console.log(error.response?.data);
+      setErrors(error.response?.data || ["An error occurred during signup"]);
     }
   };
 
@@ -45,10 +45,10 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUser(res.data.user);
     } catch (error) {
-      if (Array.isArray(error.response.data)) {
+      if (error.response && Array.isArray(error.response.data)) {
         return setErrors(error.response.data);
       }
-      setErrors([error.response.data.message]);
+      setErrors([error.response?.data?.message || "Error al iniciar sesión"]);
     }
   };
 
