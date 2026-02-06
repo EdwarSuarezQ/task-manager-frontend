@@ -15,6 +15,7 @@ import {
   User,
   ChevronDown,
 } from "lucide-react";
+import Pagination from "../components/Pagination";
 
 function AdminUsersPage() {
   const { user } = useAuth();
@@ -246,26 +247,8 @@ function AdminUsersPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentUsers = filteredUsers.slice(startIndex, endIndex);
 
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  };
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
+  const handleItemsPerPageChange = (newLimit) => {
+    setItemsPerPage(newLimit);
     setCurrentPage(1);
   };
 
@@ -506,78 +489,14 @@ function AdminUsersPage() {
           )}
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
-          <div className="flex items-center gap-2">
-            <label className="text-gray-300 text-sm">Mostrando:</label>
-            <select
-              value={itemsPerPage}
-              onChange={handleItemsPerPageChange}
-              className="px-2 py-1 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={15}>15</option>
-              <option value={20}>20</option>
-              <option value={25}>25</option>
-            </select>
-            <span className="text-gray-300 text-sm">registros por página</span>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 bg-zinc-700 text-white rounded-md disabled:opacity-50 hover:bg-zinc-600 transition-colors"
-              >
-                «
-              </button>
-              <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 bg-zinc-700 text-white rounded-md disabled:opacity-50 hover:bg-zinc-600 transition-colors"
-              >
-                ‹
-              </button>
-
-              {getPageNumbers().map((page) => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-1 rounded-md transition-colors ${
-                    currentPage === page
-                      ? "bg-blue-600 text-white"
-                      : "bg-zinc-700 text-white hover:bg-zinc-600"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 bg-zinc-700 text-white rounded-md disabled:opacity-50 hover:bg-zinc-600 transition-colors"
-              >
-                ›
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 bg-zinc-700 text-white rounded-md disabled:opacity-50 hover:bg-zinc-600 transition-colors"
-              >
-                »
-              </button>
-            </div>
-          )}
-
-          <div className="text-gray-300 text-sm text-center md:text-right">
-            Mostrando {startIndex + 1} -{" "}
-            {Math.min(endIndex, filteredUsers.length)} de {filteredUsers.length}{" "}
-            registros
-            {searchTerm && ` (filtrados de ${users.length} total)`}
-          </div>
-        </div>
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredUsers.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
       </div>
     </div>
   );
