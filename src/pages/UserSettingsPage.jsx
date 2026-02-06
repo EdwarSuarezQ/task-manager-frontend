@@ -113,7 +113,7 @@ function UserSettingsPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-100px)] px-6 py-10 relative">
+    <div className="flex flex-col items-center justify-start min-h-[calc(100vh-100px)] px-4 sm:px-6 py-8 sm:py-10 relative">
       {message.text && (
         <div
           className={`fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg transition-all duration-500 ${
@@ -130,12 +130,12 @@ function UserSettingsPage() {
         Configuración de Usuario
       </h1>
 
-      <div className="flex gap-4 mb-8">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 w-full max-w-2xl px-2">
         <button
           onClick={() => setActiveTab("profile")}
-          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`px-4 py-2 rounded-md font-medium transition-colors flex-1 sm:flex-none text-sm sm:text-base ${
             activeTab === "profile"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-lg"
               : "bg-zinc-700 text-gray-300 hover:bg-zinc-600"
           }`}
         >
@@ -143,9 +143,9 @@ function UserSettingsPage() {
         </button>
         <button
           onClick={() => setActiveTab("password")}
-          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`px-4 py-2 rounded-md font-medium transition-colors flex-1 sm:flex-none text-sm sm:text-base ${
             activeTab === "password"
-              ? "bg-blue-600 text-white"
+              ? "bg-blue-600 text-white shadow-lg"
               : "bg-zinc-700 text-gray-300 hover:bg-zinc-600"
           }`}
         >
@@ -153,13 +153,13 @@ function UserSettingsPage() {
         </button>
         <button
           onClick={() => setActiveTab("danger")}
-          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`px-4 py-2 rounded-md font-medium transition-colors flex-1 sm:flex-none text-sm sm:text-base ${
             activeTab === "danger"
-              ? "bg-red-600 text-white"
+              ? "bg-red-600 text-white shadow-lg"
               : "bg-zinc-700 text-gray-300 hover:bg-zinc-600"
           }`}
         >
-          Eliminar Cuenta
+          Eliminar
         </button>
       </div>
 

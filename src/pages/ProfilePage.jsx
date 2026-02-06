@@ -28,38 +28,38 @@ function ProfilePage() {
       <h1 className="text-3xl font-bold text-white mb-6">Mi Perfil</h1>
 
       <div className="bg-zinc-800 p-6 rounded-md w-full max-w-2xl flex flex-col gap-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <p>
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1 space-y-1">
+            <p className="text-sm sm:text-base">
               <span className="font-bold text-slate-200">Usuario:</span>{" "}
-              {user.username}
+              <span className="text-gray-300">{user.username}</span>
             </p>
-            <p>
+            <p className="text-sm sm:text-base">
               <span className="font-bold text-slate-200">Correo:</span>{" "}
-              {user.email}
+              <span className="text-gray-300 truncate block sm:inline">{user.email}</span>
             </p>
           </div>
           <Link
             to="/settings"
-            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md text-white text-sm"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white text-sm font-medium text-center transition-colors"
           >
             Configuración
           </Link>
         </div>
       </div>
 
-      <div className="flex justify-between mt-6 gap-4 w-full max-w-2xl">
-        <div className="bg-blue-600 p-4 rounded-md flex-1 text-center text-white">
-          <p className="font-bold">Tareas Totales</p>
-          <p className="text-2xl">{totalTareas}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 mt-6 gap-4 w-full max-w-2xl">
+        <div className="bg-blue-600 p-4 rounded-md text-center text-white shadow-lg">
+          <p className="font-bold text-sm uppercase tracking-wider opacity-80">Tareas Totales</p>
+          <p className="text-3xl font-bold">{totalTareas}</p>
         </div>
-        <div className="bg-green-600 p-4 rounded-md flex-1 text-center text-white">
-          <p className="font-bold">Completadas</p>
-          <p className="text-2xl">{tareasCompletadas}</p>
+        <div className="bg-green-600 p-4 rounded-md text-center text-white shadow-lg">
+          <p className="font-bold text-sm uppercase tracking-wider opacity-80">Completadas</p>
+          <p className="text-3xl font-bold">{tareasCompletadas}</p>
         </div>
-        <div className="bg-red-600 p-4 rounded-md flex-1 text-center text-white">
-          <p className="font-bold">Vencidas</p>
-          <p className="text-2xl">{tareasVencidas}</p>
+        <div className="bg-red-600 p-4 rounded-md text-center text-white shadow-lg">
+          <p className="font-bold text-sm uppercase tracking-wider opacity-80">Vencidas</p>
+          <p className="text-3xl font-bold">{tareasVencidas}</p>
         </div>
       </div>
 

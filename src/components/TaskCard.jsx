@@ -40,8 +40,11 @@ export function TaskCard({ task }) {
       <div>
         <header className="flex justify-between items-start gap-2 mb-2">
           <h1
-            className={`text-2xl font-bold truncate flex-1 ${
+            className={`text-xl sm:text-2xl font-bold flex-1 ${
               task.completed ? "line-through text-green-400" : "text-white"
+            } ${
+              // En desktop usamos truncate, en mobile permitimos un poco más de espacio
+              "truncate sm:whitespace-normal sm:overflow-visible"
             }`}
           >
             {task.title}
@@ -62,15 +65,15 @@ export function TaskCard({ task }) {
       </div>
 
       <div className="mt-4 flex flex-col gap-2">
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 mt-4">
           <button
-            className="bg-red-600 hover:bg-red-700 px-2 py-1.5 rounded-md text-sm font-medium transition-colors"
+            className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
             onClick={() => deleteTask(task._id)}
           >
             Eliminar
           </button>
           <Link
-            className={`${classBoton} flex justify-center items-center px-4 py-1.5 font-medium transition-colors`}
+            className={`${classBoton} flex justify-center items-center px-4 py-1.5 font-medium transition-colors w-full sm:w-auto`}
             to={!esDeshabilitado ? `/tasks/${task._id}` : "#"}
             onClick={(e) => {
               if (esDeshabilitado) e.preventDefault();
@@ -79,7 +82,7 @@ export function TaskCard({ task }) {
             Editar
           </Link>
           <Link
-            className="bg-green-600 hover:bg-green-700 px-4 py-1.5 rounded-md text-sm font-medium flex justify-center items-center transition-colors"
+            className="bg-green-600 hover:bg-green-700 px-4 py-1.5 rounded-md text-sm font-medium flex justify-center items-center transition-colors w-full sm:w-auto"
             to={`/tasks/view/${task._id}`}
           >
             Ver Tarea
