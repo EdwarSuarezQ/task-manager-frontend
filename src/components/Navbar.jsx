@@ -144,7 +144,7 @@ function Navbar() {
         <div className="flex justify-between items-center h-16">
           <Link
             to="/"
-            className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
+            className="text-xl sm:text-2xl font-bold text-white hover:text-gray-200 transition-colors truncate max-w-[180px] sm:max-w-none"
           >
             Gestión de Tareas
           </Link>
@@ -167,7 +167,7 @@ function Navbar() {
                   </button>
 
                   {notiAbierto && (
-                    <div className="absolute right-0 mt-2 w-96 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50">
+                    <div className="absolute right-[-60px] sm:right-0 mt-2 w-[calc(100vw-2rem)] max-w-[380px] sm:w-96 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl z-50">
                       <div className="px-4 py-3 border-b border-zinc-700">
                         <div className="flex justify-between items-center">
                           <h3 className="text-white font-semibold">

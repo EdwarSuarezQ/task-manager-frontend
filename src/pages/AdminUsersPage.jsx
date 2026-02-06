@@ -344,7 +344,7 @@ function AdminUsersPage() {
                 placeholder="Buscar usuarios..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-4 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none w-64"
+                className="px-4 py-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:border-blue-500 focus:outline-none w-full sm:w-64"
               />
               {searchTerm && (
                 <button
@@ -389,157 +389,121 @@ function AdminUsersPage() {
         </div>
 
         <div className="bg-zinc-800 rounded-lg w-full overflow-hidden shadow-lg">
-          <div className="overflow-x-auto">
+          {/* Vista de Tabla para Desktop */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full border-collapse min-w-[800px]">
               <thead className="bg-zinc-900">
                 <tr>
-                  <th className="w-48 p-4 text-left text-white font-semibold whitespace-nowrap">
-                    Usuario
-                  </th>
-                  <th className="w-64 p-4 text-left text-white font-semibold whitespace-nowrap">
-                    Email
-                  </th>
-                  <th className="w-32 p-4 text-center text-white font-semibold whitespace-nowrap">
-                    Rol
-                  </th>
-                  <th className="w-36 p-4 text-center text-white font-semibold whitespace-nowrap">
-                    Estado
-                  </th>
-                  <th className="w-48 p-4 text-center text-white font-semibold whitespace-nowrap">
-                    Fecha Registro
-                  </th>
-                  <th className="w-56 p-4 text-center text-white font-semibold whitespace-nowrap">
-                    Acciones
-                  </th>
+                  <th className="p-4 text-left text-white font-semibold whitespace-nowrap">Usuario</th>
+                  <th className="p-4 text-left text-white font-semibold whitespace-nowrap">Email</th>
+                  <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Rol</th>
+                  <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Estado</th>
+                  <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Fecha Registro</th>
+                  <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {currentUsers.map((userItem, index) => {
                   const availableActions = getAvailableActions(userItem);
-
                   return (
-                    <tr
-                      key={userItem._id}
-                      className={`border-b border-zinc-700 transition-colors ${
-                        index % 2 === 0 ? "bg-zinc-800" : "bg-zinc-700"
-                      } hover:bg-zinc-600`}
-                    >
-                      <td className="w-48 p-4 text-gray-300 font-medium whitespace-nowrap truncate">
-                        {userItem.username}
-                      </td>
-                      <td className="w-64 p-4 text-gray-300 whitespace-nowrap truncate">
-                        {userItem.email}
-                      </td>
-                      <td className="w-32 p-4 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
-                            userItem.role === "super_admin"
-                              ? "bg-red-600 text-white"
-                              : userItem.role === "admin"
-                              ? "bg-purple-600 text-white"
-                              : "bg-gray-600 text-white"
-                          }`}
-                        >
-                          {userItem.role === "super_admin"
-                            ? "Super Admin"
-                            : userItem.role === "admin"
-                            ? "Admin"
-                            : "Usuario"}
+                    <tr key={userItem._id} className={`border-b border-zinc-700 transition-colors ${index % 2 === 0 ? "bg-zinc-800" : "bg-zinc-700"} hover:bg-zinc-600`}>
+                      <td className="p-4 text-gray-300 font-medium whitespace-nowrap truncate">{userItem.username}</td>
+                      <td className="p-4 text-gray-300 whitespace-nowrap truncate">{userItem.email}</td>
+                      <td className="p-4 text-center">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${userItem.role === "super_admin" ? "bg-red-600 text-white" : userItem.role === "admin" ? "bg-purple-600 text-white" : "bg-gray-600 text-white"}`}>
+                          {userItem.role === "super_admin" ? "Super Admin" : userItem.role === "admin" ? "Admin" : "Usuario"}
                         </span>
                       </td>
-                      <td className="w-36 p-4 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${
-                            userItem.isActive
-                              ? "bg-green-600 text-white"
-                              : "bg-red-600 text-white"
-                          }`}
-                        >
+                      <td className="p-4 text-center">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block w-full ${userItem.isActive ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}>
                           {userItem.isActive ? "Activo" : "Bloqueado"}
                         </span>
                       </td>
-                      <td className="w-48 p-4 text-gray-300 text-sm text-center whitespace-nowrap">
-                        {formatDate(userItem.createdAt)}
-                      </td>
-                      <td className="w-48 p-4 text-center">
+                      <td className="p-4 text-gray-300 text-sm text-center whitespace-nowrap">{formatDate(userItem.createdAt)}</td>
+                      <td className="p-4 text-center">
                         {availableActions.length > 0 ? (
-                          <div
-                            className="relative"
-                            ref={(el) => setDropdownRef(el, userItem._id)}
-                          >
-                            <button
-                              onClick={() =>
-                                setOpenDropdown(
-                                  openDropdown === userItem._id
-                                    ? null
-                                    : userItem._id
-                                )
-                              }
-                              className="w-full flex items-center justify-between px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-md text-gray-300 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs"
-                            >
-                              <span className="font-medium truncate">
-                                Acciones
-                              </span>
-                              <ChevronDown
-                                size={14}
-                                className={`transition-transform duration-200 ${
-                                  openDropdown === userItem._id
-                                    ? "rotate-180"
-                                    : ""
-                                }`}
-                              />
+                          <div className="relative" ref={(el) => setDropdownRef(el, userItem._id)}>
+                            <button onClick={() => setOpenDropdown(openDropdown === userItem._id ? null : userItem._id)} className="w-full flex items-center justify-between px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-md text-gray-300 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs">
+                              <span className="font-medium truncate">Acciones</span>
+                              <ChevronDown size={14} className={`transition-transform duration-200 ${openDropdown === userItem._id ? "rotate-180" : ""}`} />
                             </button>
-
                             {openDropdown === userItem._id && (
-                              <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-800 border border-zinc-600 rounded-md shadow-xl z-50 overflow-hidden">
-                                {availableActions.map((action, index) => {
+                              <div className="absolute top-full right-0 mt-1 w-48 bg-zinc-900 border border-zinc-600 rounded-md shadow-xl z-50 overflow-hidden">
+                                {availableActions.map((action, idx) => {
                                   const Icon = action.icon;
                                   return (
-                                    <button
-                                      key={action.id}
-                                      onClick={() => {
-                                        action.action();
-                                        setOpenDropdown(null);
-                                      }}
-                                      className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${
-                                        index > 0
-                                          ? "border-t border-zinc-600"
-                                          : ""
-                                      }`}
-                                    >
-                                      <Icon
-                                        size={14}
-                                        className={action.color}
-                                      />
-                                      <span className="text-gray-300 font-medium">
-                                        {action.label}
-                                      </span>
+                                    <button key={action.id} onClick={() => { action.action(); setOpenDropdown(null); }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
+                                      <Icon size={14} className={action.color} />
+                                      <span className="text-gray-300 font-medium">{action.label}</span>
                                     </button>
                                   );
                                 })}
                               </div>
                             )}
                           </div>
-                        ) : (
-                          <span className="text-gray-500 text-xs">
-                            No hay acciones disponibles
-                          </span>
-                        )}
+                        ) : <span className="text-gray-500 text-xs">No hay acciones</span>}
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-
-            {currentUsers.length === 0 && (
-              <div className="p-8 text-center text-gray-400">
-                {searchTerm
-                  ? "No se encontraron usuarios que coincidan con la búsqueda"
-                  : "No hay usuarios registrados"}
-              </div>
-            )}
           </div>
+
+          {/* Vista de Tarjetas para Móvil */}
+          <div className="md:hidden divide-y divide-zinc-700">
+            {currentUsers.map((userItem) => {
+              const availableActions = getAvailableActions(userItem);
+              return (
+                <div key={userItem._id} className="p-4 bg-zinc-800 hover:bg-zinc-750 transition-colors">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-bold truncate">{userItem.username}</h3>
+                      <p className="text-gray-400 text-sm truncate">{userItem.email}</p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${userItem.isActive ? "bg-green-600/20 text-green-400" : "bg-red-600/20 text-red-400"}`}>
+                      {userItem.isActive ? "Activo" : "Bloqueado"}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${userItem.role === "super_admin" ? "bg-red-500" : userItem.role === "admin" ? "bg-purple-600" : "bg-gray-600"} text-white`}>
+                      {userItem.role}
+                    </span>
+                    <span className="text-gray-500 text-[10px]">{formatDate(userItem.createdAt)}</span>
+                  </div>
+
+                  {availableActions.length > 0 && (
+                    <div className="relative" ref={(el) => setDropdownRef(el, userItem._id)}>
+                      <button onClick={() => setOpenDropdown(openDropdown === userItem._id ? null : userItem._id)} className="w-full flex items-center justify-between px-3 py-2 bg-zinc-700 hover:bg-zinc-600 border border-zinc-600 rounded-md text-gray-300 transition-all text-sm">
+                        <span>Gestionar Usuario</span>
+                        <ChevronDown size={16} className={`transition-transform ${openDropdown === userItem._id ? "rotate-180" : ""}`} />
+                      </button>
+                      {openDropdown === userItem._id && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-600 rounded-lg shadow-2xl z-50 overflow-hidden animate-fade-in-down">
+                          {availableActions.map((action, idx) => {
+                            const Icon = action.icon;
+                            return (
+                              <button key={action.id} onClick={() => { action.action(); setOpenDropdown(null); }} className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-zinc-800 transition-colors ${idx > 0 ? "border-t border-zinc-800" : ""}`}>
+                                <Icon size={16} className={action.color} />
+                                <span className="text-gray-200 font-medium">{action.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {currentUsers.length === 0 && (
+            <div className="p-8 text-center text-gray-400">
+              {searchTerm ? "No se encontraron resultados" : "No hay usuarios"}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">

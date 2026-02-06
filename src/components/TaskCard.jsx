@@ -38,9 +38,9 @@ export function TaskCard({ task }) {
       ${task.completed ? "opacity-70" : ""}`}
     >
       <div>
-        <header className="flex justify-between items-center mb-2">
+        <header className="flex justify-between items-start gap-2 mb-2">
           <h1
-            className={`text-2xl font-bold truncate ${
+            className={`text-xl sm:text-2xl font-bold break-words flex-1 ${
               task.completed ? "line-through text-green-400" : "text-white"
             }`}
           >
@@ -62,15 +62,15 @@ export function TaskCard({ task }) {
       </div>
 
       <div className="mt-4 flex flex-col gap-2">
-        <div className="flex gap-2 flex-wrap">
+        <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 mt-2">
           <button
-            className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-sm"
+            className="bg-red-600 hover:bg-red-700 px-2 py-1.5 rounded-md text-sm font-medium transition-colors"
             onClick={() => deleteTask(task._id)}
           >
             Eliminar
           </button>
           <Link
-            className={classBoton}
+            className={`${classBoton} flex justify-center items-center py-1.5 font-medium transition-colors`}
             to={!esDeshabilitado ? `/tasks/${task._id}` : "#"}
             onClick={(e) => {
               if (esDeshabilitado) e.preventDefault();
@@ -79,7 +79,7 @@ export function TaskCard({ task }) {
             Editar
           </Link>
           <Link
-            className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded-md text-sm"
+            className="bg-green-600 hover:bg-green-700 px-2 py-1.5 rounded-md text-sm font-medium flex justify-center items-center transition-colors"
             to={`/tasks/view/${task._id}`}
           >
             Ver Tarea
