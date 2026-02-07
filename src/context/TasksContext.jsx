@@ -27,8 +27,7 @@ export function TaskProvider({ children }) {
   }, [isAuthenticated]);
 
   const createTask = async (task) => {
-    const res = await createTaskRequest(task);
-    console.log(res);
+    await createTaskRequest(task);
   };
 
   const deleteTask = async (id) => {
@@ -36,7 +35,7 @@ export function TaskProvider({ children }) {
       const res = await deleteTaskRequest(id);
       if (res.status === 204) setTasks(tasks.filter((task) => task._id !== id));
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -45,7 +44,7 @@ export function TaskProvider({ children }) {
       const res = await getTasksRequest();
       setTasks(res.data);
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -54,7 +53,7 @@ export function TaskProvider({ children }) {
       const res = await getTaskRequest(id);
       return res.data;
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -65,7 +64,7 @@ export function TaskProvider({ children }) {
         prevTasks.map((t) => (t._id === id ? res.data : t))
       );
     } catch (error) {
-      console.log(error);
+
     }
   };
 

@@ -27,12 +27,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async (user) => {
     try {
       const res = await registerRequest(user);
-      console.log(res.data);
       if (res.data.token) localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      console.log(error.response?.data);
       setErrors(error.response?.data || ["An error occurred during signup"]);
     }
   };
@@ -40,7 +38,6 @@ export const AuthProvider = ({ children }) => {
   const signin = async (user) => {
     try {
       const res = await loginRequest(user);
-      console.log(res);
       if (res.data.token) localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
       setUser(res.data.user);

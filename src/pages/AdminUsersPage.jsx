@@ -18,7 +18,6 @@ import {
 import Pagination from "../components/Pagination";
 
 function AdminUsersPage() {
-  console.log("%c>>> AdminUsersPage cargada v2 <<<", "background: #222; color: #bada55; font-size: 16px");
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -48,7 +47,7 @@ function AdminUsersPage() {
         userItem.role.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredUsers(filtered);
-    setCurrentPage(1);
+
   }, [searchTerm, users]);
 
   useEffect(() => {
@@ -89,21 +88,15 @@ function AdminUsersPage() {
   };
 
   const handleToggleStatus = async (userId, currentStatus) => {
-    console.log(`Iniciando toggle status para usuario: ${userId}, estado actual: ${currentStatus}`);
     try {
       const response = await toggleUserStatusRequest(userId, !currentStatus);
-      console.log("Respuesta del servidor (toggle):", response.data);
-      showMessage("success", response.data.message);
+      const updatedUserFromDB = response.data;
+      
+      showMessage("success", updatedUserFromDB.message || "Usuario actualizado");
 
       setUsers((prevUsers) =>
         prevUsers.map((u) =>
-          u._id === userId ? { ...u, isActive: !currentStatus } : u
-        )
-      );
-
-      setFilteredUsers((prevFiltered) =>
-        prevFiltered.map((u) =>
-          u._id === userId ? { ...u, isActive: !currentStatus } : u
+          u._id === userId ? { ...u, isActive: updatedUserFromDB.isActive } : u
         )
       );
     } catch (error) {
@@ -115,20 +108,17 @@ function AdminUsersPage() {
   };
 
   const handleDeleteUser = async (userId, username) => {
-    console.log(`Intentando eliminar usuario: ${username} (${userId})`);
     if (
       !window.confirm(
         `¿Estás seguro de que quieres eliminar al usuario "${username}"? Esta acción es irreversible.`
       )
     ) {
-      console.log("Eliminación cancelada por el usuario");
       return;
     }
 
     try {
-      console.log("Enviando petición de eliminación a la API...");
       await deleteUserRequest(userId);
-      console.log("Usuario eliminado con éxito del servidor");
+      showMessage("success", "Usuario eliminado exitosamente");
       showMessage("success", "Usuario eliminado exitosamente");
 
       setUsers((prevUsers) => prevUsers.filter((u) => u._id !== userId));
@@ -144,20 +134,17 @@ function AdminUsersPage() {
   };
 
   const handleChangeRole = async (userId, currentRole, newRole) => {
-    console.log(`Intentando cambiar rol de ${userId}: ${currentRole} -> ${newRole}`);
     if (
       !window.confirm(
         `¿Estás seguro de que quieres cambiar el rol de este usuario de "${currentRole}" a "${newRole}"?`
       )
     ) {
-      console.log("Cambio de rol cancelado por el usuario");
       return;
     }
 
     try {
-      console.log("Enviando petición de cambio de rol a la API...");
       const response = await changeUserRoleRequest(userId, newRole);
-      console.log("Respuesta del servidor (cambio rol):", response.data);
+      showMessage("success", response.data.message);
       showMessage("success", response.data.message);
 
       setUsers((prevUsers) =>
@@ -323,12 +310,13 @@ function AdminUsersPage() {
 
         {message.text && (
           <div
-            className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-up
+            className={`fixed top-10 left-1/2 transform -translate-x-1/2 z-[100] px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 border-2
             ${
-              message.type === "success" ? "bg-green-600" : "bg-red-600"
-            } text-white`}
+              message.type === "success" ? "bg-green-600 border-green-400" : "bg-red-600 border-red-400"
+            } text-white font-bold text-lg`}
+            style={{ minWidth: '300px', justifyContent: 'center' }}
           >
-            <span className="font-medium">{message.text}</span>
+            <span>{message.text}</span>
           </div>
         )}
 
@@ -431,8 +419,7 @@ function AdminUsersPage() {
                                     <button key={action.id} onMouseDown={(e) => { 
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.info("%c[DESKTOP] Acción disparada:", "color: white; background: red; font-size: 20px", action.id);
-                                        alert("Acción Desktop: " + action.id);
+
                                         action.action(); 
                                         setOpenDropdown(null); 
                                       }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
@@ -490,8 +477,6 @@ function AdminUsersPage() {
                                <button key={action.id} onMouseDown={(e) => { 
                                  e.preventDefault();
                                  e.stopPropagation();
-                                 console.info("%c[MOBILE] Acción disparada:", "color: white; background: red; font-size: 20px", action.id);
-                                 alert("Acción Mobile: " + action.id);
                                  action.action(); 
                                  setOpenDropdown(null); 
                                }} className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-zinc-800 transition-colors ${idx > 0 ? "border-t border-zinc-800" : ""}`}>
