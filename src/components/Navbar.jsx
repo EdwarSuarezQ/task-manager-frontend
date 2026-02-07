@@ -146,7 +146,7 @@ function Navbar() {
             to="/"
             className="text-xl sm:text-2xl font-bold text-white hover:text-gray-200 transition-colors truncate max-w-[180px] sm:max-w-none"
           >
-            Gestión de Tareas
+            Gestor de Tareas
           </Link>
 
           <div className="flex items-center gap-4">
