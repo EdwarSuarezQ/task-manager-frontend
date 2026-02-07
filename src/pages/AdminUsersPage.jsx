@@ -18,6 +18,7 @@ import {
 import Pagination from "../components/Pagination";
 
 function AdminUsersPage() {
+  console.log("%c>>> AdminUsersPage cargada v2 <<<", "background: #222; color: #bada55; font-size: 16px");
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -428,7 +429,7 @@ function AdminUsersPage() {
                                   const Icon = action.icon;
                                   return (
                                     <button key={action.id} onClick={() => { 
-                                        console.log(`Click en acción: ${action.id} para usuario: ${userItem.username}`);
+                                        console.info("%c[DESKTOP] Click en acción:", "color: blue; font-weight: bold", action.id);
                                         action.action(); 
                                         setOpenDropdown(null); 
                                       }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
@@ -480,10 +481,14 @@ function AdminUsersPage() {
                       </button>
                       {openDropdown === userItem._id && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-600 rounded-lg shadow-2xl z-50 overflow-hidden animate-fade-in-down">
-                          {availableActions.map((action, idx) => {
-                            const Icon = action.icon;
-                            return (
-                              <button key={action.id} onClick={() => { action.action(); setOpenDropdown(null); }} className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-zinc-800 transition-colors ${idx > 0 ? "border-t border-zinc-800" : ""}`}>
+                           {availableActions.map((action, idx) => {
+                             const Icon = action.icon;
+                             return (
+                               <button key={action.id} onClick={() => { 
+                                 console.info("%c[MOBILE] Click en acción:", "color: orange; font-weight: bold", action.id);
+                                 action.action(); 
+                                 setOpenDropdown(null); 
+                               }} className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-zinc-800 transition-colors ${idx > 0 ? "border-t border-zinc-800" : ""}`}>
                                 <Icon size={16} className={action.color} />
                                 <span className="text-gray-200 font-medium">{action.label}</span>
                               </button>
