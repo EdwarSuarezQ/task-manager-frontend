@@ -88,8 +88,10 @@ function AdminUsersPage() {
   };
 
   const handleToggleStatus = async (userId, currentStatus) => {
+    console.log(`Iniciando toggle status para usuario: ${userId}, estado actual: ${currentStatus}`);
     try {
       const response = await toggleUserStatusRequest(userId, !currentStatus);
+      console.log("Respuesta del servidor (toggle):", response.data);
       showMessage("success", response.data.message);
 
       setUsers((prevUsers) =>
@@ -112,15 +114,20 @@ function AdminUsersPage() {
   };
 
   const handleDeleteUser = async (userId, username) => {
+    console.log(`Intentando eliminar usuario: ${username} (${userId})`);
     if (
       !window.confirm(
         `¿Estás seguro de que quieres eliminar al usuario "${username}"? Esta acción es irreversible.`
       )
-    )
+    ) {
+      console.log("Eliminación cancelada por el usuario");
       return;
+    }
 
     try {
+      console.log("Enviando petición de eliminación a la API...");
       await deleteUserRequest(userId);
+      console.log("Usuario eliminado con éxito del servidor");
       showMessage("success", "Usuario eliminado exitosamente");
 
       setUsers((prevUsers) => prevUsers.filter((u) => u._id !== userId));
@@ -136,15 +143,20 @@ function AdminUsersPage() {
   };
 
   const handleChangeRole = async (userId, currentRole, newRole) => {
+    console.log(`Intentando cambiar rol de ${userId}: ${currentRole} -> ${newRole}`);
     if (
       !window.confirm(
         `¿Estás seguro de que quieres cambiar el rol de este usuario de "${currentRole}" a "${newRole}"?`
       )
-    )
+    ) {
+      console.log("Cambio de rol cancelado por el usuario");
       return;
+    }
 
     try {
+      console.log("Enviando petición de cambio de rol a la API...");
       const response = await changeUserRoleRequest(userId, newRole);
+      console.log("Respuesta del servidor (cambio rol):", response.data);
       showMessage("success", response.data.message);
 
       setUsers((prevUsers) =>
@@ -415,7 +427,11 @@ function AdminUsersPage() {
                                 {availableActions.map((action, idx) => {
                                   const Icon = action.icon;
                                   return (
-                                    <button key={action.id} onClick={() => { action.action(); setOpenDropdown(null); }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
+                                    <button key={action.id} onClick={() => { 
+                                        console.log(`Click en acción: ${action.id} para usuario: ${userItem.username}`);
+                                        action.action(); 
+                                        setOpenDropdown(null); 
+                                      }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
                                       <Icon size={14} className={action.color} />
                                       <span className="text-gray-300 font-medium">{action.label}</span>
                                     </button>
