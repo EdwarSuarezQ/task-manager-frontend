@@ -428,8 +428,11 @@ function AdminUsersPage() {
                                 {availableActions.map((action, idx) => {
                                   const Icon = action.icon;
                                   return (
-                                    <button key={action.id} onClick={() => { 
-                                        console.info("%c[DESKTOP] Click en acción:", "color: blue; font-weight: bold", action.id);
+                                    <button key={action.id} onMouseDown={(e) => { 
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.info("%c[DESKTOP] Acción disparada:", "color: white; background: red; font-size: 20px", action.id);
+                                        alert("Acción Desktop: " + action.id);
                                         action.action(); 
                                         setOpenDropdown(null); 
                                       }} className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-zinc-700 transition-colors ${idx > 0 ? "border-t border-zinc-600" : ""}`}>
@@ -484,8 +487,11 @@ function AdminUsersPage() {
                            {availableActions.map((action, idx) => {
                              const Icon = action.icon;
                              return (
-                               <button key={action.id} onClick={() => { 
-                                 console.info("%c[MOBILE] Click en acción:", "color: orange; font-weight: bold", action.id);
+                               <button key={action.id} onMouseDown={(e) => { 
+                                 e.preventDefault();
+                                 e.stopPropagation();
+                                 console.info("%c[MOBILE] Acción disparada:", "color: white; background: red; font-size: 20px", action.id);
+                                 alert("Acción Mobile: " + action.id);
                                  action.action(); 
                                  setOpenDropdown(null); 
                                }} className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-zinc-800 transition-colors ${idx > 0 ? "border-t border-zinc-800" : ""}`}>
