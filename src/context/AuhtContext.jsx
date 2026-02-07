@@ -87,6 +87,9 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
+        if (error.response && error.response.status === 403) {
+          setErrors([error.response.data.message]);
+        }
         setIsAuthenticated(false);
         setUser(null);
       } finally {
