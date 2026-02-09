@@ -205,17 +205,20 @@ function Navbar() {
                           <div className="divide-y divide-zinc-800">
                             {notifications.map((noti, index) => {
                               const isOverdue =
-                                noti.message?.includes("vencida");
+                                noti.message?.includes("vencida") || noti.type === "overdue";
                               const isDueToday =
-                                noti.message?.includes("vence hoy");
+                                noti.message?.includes("vence hoy") || noti.type === "dueToday";
                               const isDueTomorrow =
                                 noti.message?.includes("vence mañana");
+                              const isNewUser = noti.type === "newUser";
 
                               return (
                                 <div
                                   key={index}
-                                  className="p-4 cursor-pointer hover:bg-zinc-800"
-                                  onClick={() => handleNotificationClick(noti)}
+                                  className={`p-4 transition-colors ${
+                                    isNewUser ? "" : "cursor-pointer hover:bg-zinc-800"
+                                  }`}
+                                  onClick={() => !isNewUser && handleNotificationClick(noti)}
                                 >
                                   <div className="flex items-start gap-3">
                                     <div
@@ -226,14 +229,30 @@ function Navbar() {
                                           ? "bg-yellow-500"
                                           : isDueTomorrow
                                           ? "bg-blue-500"
+                                          : isNewUser
+                                          ? "bg-green-500"
                                           : "bg-gray-500"
                                       }`}
                                     />
 
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-white text-sm">
+                                      <p className="text-white text-sm font-medium">
                                         {noti.message}
                                       </p>
+
+                                      {/* Mostrar email para nuevos usuarios */}
+                                      {isNewUser && noti.email && (
+                                        <p className="text-gray-400 text-xs mt-1">
+                                          Email: {noti.email}
+                                        </p>
+                                      )}
+
+                                      {/* Mostrar usuario para tareas de administradores */}
+                                      {!isNewUser && noti.username && (user?.role === "admin" || user?.role === "super_admin") && (
+                                        <p className="text-gray-400 text-xs mt-1">
+                                          Usuario: {noti.username}
+                                        </p>
+                                      )}
 
                                       {noti.dueDate && (
                                         <p className="text-gray-500 text-xs mt-1">
@@ -242,8 +261,15 @@ function Navbar() {
                                         </p>
                                       )}
 
+                                      {isNewUser && noti.createdAt && (
+                                        <p className="text-gray-500 text-xs mt-1">
+                                          Registrado:{" "}
+                                          {formatNotificationDate(noti.createdAt)}
+                                        </p>
+                                      )}
+
                                       <p className="text-gray-600 text-xs mt-1">
-                                        {getRelativeTime(noti.generatedAt)}
+                                        {getRelativeTime(noti.generatedAt || noti.createdAt)}
                                       </p>
                                     </div>
                                   </div>

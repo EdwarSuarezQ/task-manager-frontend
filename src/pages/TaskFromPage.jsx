@@ -30,14 +30,16 @@ function TaskFromPage() {
         setValue("date", dayjs(task.date).utc().format("YYYY-MM-DD"));
         setValue("time", dayjs(task.date).utc().format("HH:mm"));
       } else {
+        setValue("title", "");
+        setValue("description", "");
         setValue("date", today);
         setValue("time", currentTime);
       }
     }
     loadTask();
-  }, []);
+  }, [params.id]);
 
-  const onSubmits = handleSubmit((data) => {
+  const onSubmits = handleSubmit(async (data) => {
     const dateTimeString = `${data.date}T${data.time}`;
 
     const dataValid = {
@@ -48,9 +50,9 @@ function TaskFromPage() {
     };
 
     if (params.id) {
-      updateTask(params.id, dataValid);
+      await updateTask(params.id, dataValid);
     } else {
-      createTask(dataValid);
+      await createTask(dataValid);
     }
     navigate("/tasks");
   });

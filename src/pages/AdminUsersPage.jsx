@@ -383,6 +383,7 @@ function AdminUsersPage() {
                   <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Rol</th>
                   <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Estado</th>
                   <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Fecha Registro</th>
+                  <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Última Conexión</th>
                   <th className="p-4 text-center text-white font-semibold whitespace-nowrap">Acciones</th>
                 </tr>
               </thead>
@@ -404,6 +405,9 @@ function AdminUsersPage() {
                         </span>
                       </td>
                       <td className="p-4 text-gray-300 text-sm text-center whitespace-nowrap">{formatDate(userItem.createdAt)}</td>
+                      <td className="p-4 text-gray-300 text-sm text-center whitespace-nowrap">
+                        {userItem.lastLogin ? formatDate(userItem.lastLogin) : <span className="text-gray-500 italic">Nunca</span>}
+                      </td>
                       <td className="p-4 text-center">
                         {availableActions.length > 0 ? (
                           <div className="relative" ref={(el) => setDropdownRef(el, userItem._id)}>
@@ -456,11 +460,20 @@ function AdminUsersPage() {
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${userItem.role === "super_admin" ? "bg-red-500" : userItem.role === "admin" ? "bg-purple-600" : "bg-gray-600"} text-white`}>
                       {userItem.role}
                     </span>
-                    <span className="text-gray-500 text-[10px]">{formatDate(userItem.createdAt)}</span>
+                  </div>
+
+                  <div className="space-y-1 mb-4">
+                    <p className="text-gray-500 text-[10px]">
+                      <span className="font-medium text-gray-400">Registro:</span> {formatDate(userItem.createdAt)}
+                    </p>
+                    <p className="text-gray-500 text-[10px]">
+                      <span className="font-medium text-gray-400">Última conexión:</span>{" "}
+                      {userItem.lastLogin ? formatDate(userItem.lastLogin) : <span className="italic">Nunca</span>}
+                    </p>
                   </div>
 
                   {availableActions.length > 0 && (
