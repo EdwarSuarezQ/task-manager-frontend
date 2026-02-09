@@ -21,4 +21,4 @@ git clone https://github.com/edwarSuarezQ/task-manager-frontend.git
 nmp run dev
 ```
 
-[Ver](http://task-manager-frontend-beta-snowy.vercel.app/)
+[Ver](https://mi-gestor-de-tareas.vercel.app/)
