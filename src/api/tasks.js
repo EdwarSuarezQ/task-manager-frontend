@@ -14,3 +14,6 @@ export const getUserNotificationsRequest = () => axios.get("/notifications");
 
 export const getAdminNotificationsRequest = () =>
   axios.get("/admin/notifications");
+
+export const markNotificationAsReadRequest = (id) =>
+  axios.post("/notifications/read", { id });

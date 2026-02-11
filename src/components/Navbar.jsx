@@ -24,7 +24,7 @@ dayjs.locale("es");
 
 function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
-  const { notifications, summary, unviewedCount, markAllAsViewed } =
+  const { notifications, summary, unviewedCount, markAllAsViewed, markAsRead } =
     useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,9 +37,6 @@ function Navbar() {
   const toggleMenu = () => setMenuAbierto(!menuAbierto);
 
   const toggleNoti = () => {
-    if (!notiAbierto && unviewedCount > 0) {
-      markAllAsViewed();
-    }
     setNotiAbierto(!notiAbierto);
   };
 
@@ -128,9 +125,17 @@ function Navbar() {
   };
 
   const handleNotificationClick = (notification) => {
+    const idToMark = notification.taskId || notification.userId;
+    
+    if (idToMark) {
+      markAsRead(idToMark);
+    }
+
     if (notification.taskId) {
       navigate(`/tasks/view/${notification.taskId}`);
     }
+    // Si es usuario nuevo, por ahora solo marcamos como leído sin navegar (o podríamos ir a la lista de usuarios)
+    
     setNotiAbierto(false);
   };
 
@@ -178,20 +183,6 @@ function Navbar() {
                               </span>
                             )}
                           </h3>
-                          {(user?.role === "admin" ||
-                            user?.role === "super_admin") &&
-                            summary && (
-                              <div className="text-xs text-gray-400">
-                                {summary.tasksOverdue > 0 && (
-                                  <span className="text-red-400 mx-1">●</span>
-                                )}
-                                {summary.tasksDueToday > 0 && (
-                                  <span className="text-yellow-400 mx-1">
-                                    ●
-                                  </span>
-                                )}
-                              </div>
-                            )}
                         </div>
                       </div>
 
@@ -215,10 +206,8 @@ function Navbar() {
                               return (
                                 <div
                                   key={index}
-                                  className={`p-4 transition-colors ${
-                                    isNewUser ? "" : "cursor-pointer hover:bg-zinc-800"
-                                  }`}
-                                  onClick={() => !isNewUser && handleNotificationClick(noti)}
+                                  className={`p-4 transition-colors cursor-pointer hover:bg-zinc-800`}
+                                  onClick={() => handleNotificationClick(noti)}
                                 >
                                   <div className="flex items-start gap-3">
                                     <div
@@ -240,7 +229,6 @@ function Navbar() {
                                         {noti.message}
                                       </p>
 
-                                      {/* Mostrar email para nuevos usuarios */}
                                       {isNewUser && noti.email && (
                                         <p className="text-gray-400 text-xs mt-1">
                                           Email: {noti.email}
@@ -279,43 +267,6 @@ function Navbar() {
                           </div>
                         )}
                       </div>
-
-                      {(user?.role === "admin" ||
-                        user?.role === "super_admin") &&
-                        summary && (
-                          <div className="px-4 py-3 border-t border-zinc-700 bg-zinc-800">
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                                <span className="text-gray-400">Usuarios:</span>
-                                <span className="text-white font-semibold">
-                                  {summary.totalUsers}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                                <span className="text-gray-400">Tareas:</span>
-                                <span className="text-white font-semibold">
-                                  {summary.tasksTotal}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 bg-red-500 rounded-full" />
-                                <span className="text-gray-400">Vencidas:</span>
-                                <span className="text-white font-semibold">
-                                  {summary.tasksOverdue}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-                                <span className="text-gray-400">Hoy:</span>
-                                <span className="text-white font-semibold">
-                                  {summary.tasksDueToday}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                     </div>
                   )}
                 </div>

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import {
   getUserNotificationsRequest,
   getAdminNotificationsRequest,
+  markNotificationAsReadRequest,
 } from "../api/tasks";
 import { useAuth } from "./AuhtContext";
 
@@ -18,34 +19,7 @@ export function NotificationsProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [viewedNotifications, setViewedNotifications] = useState(new Set());
   const { isAuthenticated, user } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const savedViewed = localStorage.getItem(
-        `viewedNotifications_${user._id}`
-      );
-      if (savedViewed) {
-        try {
-          const viewedArray = JSON.parse(savedViewed);
-          setViewedNotifications(new Set(viewedArray));
-        } catch (error) {
-          console.error("Error loading viewed notifications:", error);
-        }
-      }
-    }
-  }, [isAuthenticated, user]);
-
-  useEffect(() => {
-    if (isAuthenticated && user && viewedNotifications.size > 0) {
-      const viewedArray = Array.from(viewedNotifications);
-      localStorage.setItem(
-        `viewedNotifications_${user._id}`,
-        JSON.stringify(viewedArray)
-      );
-    }
-  }, [viewedNotifications, isAuthenticated, user]);
 
   const loadNotifications = async () => {
     if (!isAuthenticated) return;
@@ -70,46 +44,46 @@ export function NotificationsProvider({ children }) {
     }
   };
 
-  const markAllAsViewed = () => {
-    const allNotificationIds = notifications.map((_, index) => index);
-    setViewedNotifications(
-      new Set([...viewedNotifications, ...allNotificationIds])
-    );
-  };
-
-  const markAsViewed = (notificationIndex) => {
-    setViewedNotifications((prev) => new Set([...prev, notificationIndex]));
-  };
-
-  const getUnviewedNotifications = () => {
-    return notifications.filter((_, index) => !viewedNotifications.has(index));
-  };
-
-  const getUnviewedCount = () => {
-    return getUnviewedNotifications().length;
-  };
-
-  const clearViewedNotifications = () => {
-    setViewedNotifications(new Set());
-    if (user) {
-      localStorage.removeItem(`viewedNotifications_${user._id}`);
+  const markAsRead = async (notificationId) => {
+    try {
+      if (notificationId) {
+        // Enviar petición al backend para marcar como leída
+        await markNotificationAsReadRequest(notificationId);
+        
+        // Actualizar estado local eliminando la notificación leída
+        setNotifications((prev) => 
+          prev.filter(n => 
+            (n.taskId && n.taskId !== notificationId) && 
+            (n.userId && n.userId !== notificationId) &&
+            (n._id && n._id !== notificationId)
+          )
+        );
+        // Recargar para sincronizar (opcional, pero asegura consistencia)
+        loadNotifications();
+      }
+    } catch (error) {
+      console.error("Error al marcar notificación como leída:", error);
     }
+  };
+
+  const markAllAsViewed = async () => {
+    // Implementar si se agrega endpoint para marcar todas
+    // Por ahora podríamos iterar, pero mejor solo implementar la individual
   };
 
   useEffect(() => {
     if (!isAuthenticated) {
       setNotifications([]);
       setSummary(null);
-      clearViewedNotifications();
       return;
     }
 
     loadNotifications();
 
-    const interval = setInterval(loadNotifications, 120000);
+    const interval = setInterval(loadNotifications, 60000); // Revisar cada minuto
 
     return () => clearInterval(interval);
-  }, [isAuthenticated, user?.role]);
+  }, [isAuthenticated, user]);
 
   return (
     <NotificationsContext.Provider
@@ -117,10 +91,8 @@ export function NotificationsProvider({ children }) {
         notifications,
         summary,
         loading,
-        unviewedCount: getUnviewedCount(),
-        markAllAsViewed,
-        markAsViewed,
-        clearViewedNotifications,
+        unviewedCount: notifications.length,
+        markAsRead,
         refreshNotifications: loadNotifications,
       }}
     >
